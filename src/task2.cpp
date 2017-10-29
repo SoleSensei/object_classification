@@ -9,22 +9,9 @@
 #include "EasyBMP.h"
 #include "linear.h"
 #include "argvparser.h"
-
-using std::string;
-using std::vector;
-using std::ifstream;
-using std::ofstream;
-using std::pair;
-using std::make_pair;
-using std::cout;
-using std::cerr;
-using std::endl;
+#include "trainer.hpp"
 
 using CommandLineProcessing::ArgvParser;
-
-typedef vector<pair<BMP*, int> > TDataSet;
-typedef vector<pair<string, int> > TFileList;
-typedef vector<pair<vector<float>, int> > TFeatures;
 
 // Load list of files and its labels from 'data_file' and
 // stores it in 'file_list'
@@ -76,17 +63,26 @@ void SavePredictions(const TFileList& file_list,
     stream.close();
 }
 
-// Exatract features from dataset.
-// You should implement this function by yourself =)
+// Extract features from dataset.
 void ExtractFeatures(const TDataSet& data_set, TFeatures* features) {
-    for (size_t image_idx = 0; image_idx < data_set.size(); ++image_idx) {
+    for (vector <pair<BMP*,int>>::const_iterator ds = data_set.begin(); ds < data_set.end(); ++ds){
+        BMP* src_image = (*ds).first;
+        int label = (*ds).second;
+
+        Image _image = grayScale(src_image);
+        const int parts_num = 64; 
+        Image pieces[parts_num]; 
+        splitInto(_image, pieces, parts_num); //_image splitted on parts_num pieces
         
-        // PLACE YOUR CODE HERE
-        // Remove this sample code and place your feature extraction code here
-        vector<float> one_image_features;
-        one_image_features.push_back(1.0);
-        features->push_back(make_pair(one_image_features, 1));
-        // End of sample code
+        Histype histo; //vector of histograms
+        for(int i = 0; i < parts_num; ++i){
+            auto gabs = gradAbs(pieces[i]);
+            auto gdir = gradDir(pieces[i]);            
+            auto h = calc_histo(gabs, gdir); //cell's histogram calculation
+            histo.insert(histo.end(), h.begin(), h.end()); //concatenation with other histograms
+        }
+        
+        features->push_back(make_pair(histo, label));
 
     }
 }
@@ -121,9 +117,8 @@ void TrainClassifier(const string& data_file, const string& model_file) {
         // Extract features from images
     ExtractFeatures(data_set, &features);
 
-        // PLACE YOUR CODE HERE
         // You can change parameters of classifier here
-    params.C = 0.01;
+    params.C = 0.1;
     TClassifier classifier(params);
         // Train classifier
     classifier.Train(features, &model);

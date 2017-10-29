@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <assert.h>
 
 #include "linear.h"
 
@@ -14,7 +15,7 @@ using std::pair;
 using std::string;
 using std::unique_ptr;
 
-typedef vector<pair<vector<float>, int> > TFeatures;
+typedef vector<pair<vector<double>, int> > TFeatures; //Histype defined in trainer.hpp
 typedef vector<int> TLabels;
 
 // Model of classifier to be trained

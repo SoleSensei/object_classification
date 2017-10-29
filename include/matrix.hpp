@@ -174,28 +174,32 @@ const Matrix<ValueT> Matrix<ValueT>::submatrix(uint prow, uint pcol,
 
 template<typename ValueT>
 template<typename UnaryMatrixOperator>
-Matrix<typename std::result_of<UnaryMatrixOperator(Matrix<ValueT>)>::type>
-	Matrix<ValueT>::unary_map(const UnaryMatrixOperator &op) const
+Matrix<ValueT>
+Matrix<ValueT>::unary_map(const UnaryMatrixOperator &op) const
 {
-	// Let's typedef return type of function for ease of usage
-	typedef typename std::result_of<UnaryMatrixOperator(Matrix<ValueT>)>::type ReturnT;
-	if (n_cols * n_rows == 0)
-		return Matrix<ReturnT>(0, 0);
+    // Let's typedef return type of function for ease of usage
+    // typedef typename std::result_of<UnaryMatrixOperator(ValueT)>::type ReturnT;
+    if (n_cols * n_rows == 0)
+        return Matrix<ValueT>(0, 0);
+        
+    Matrix <ValueT> tmp(n_rows, n_cols);
 
-	Matrix<ReturnT> tmp(n_rows, n_cols);
+    const auto radius = op.radius;
+    const auto size = 2 * radius + 1;
 
-	const auto kernel_vert_radius = op.vert_radius;
-	const auto kernel_hor_radius = op.hor_radius;
+    const auto start_i = radius;
+    const auto end_i = n_rows - radius;
+    const auto start_j = radius;
+    const auto end_j = n_cols - radius;
 
-	Matrix<ValueT> extra_image = extra_borders(kernel_vert_radius, kernel_hor_radius);
 
-	for (uint i = 0; i < n_rows; ++i) {
-		for (uint j = 0; j < n_cols; ++j) {
-			auto neighbourhood = extra_image.submatrix(i, j, 2 * kernel_vert_radius + 1, 2 * kernel_hor_radius + 1);
-			tmp(i, j) = op(neighbourhood);
-		}
-	}
-	return tmp;
+    for (uint i = start_i; i < end_i; ++i) {
+        for (uint j = start_j; j < end_j; ++j) {
+            auto neighbourhood = submatrix(i - radius, j - radius, size, size);
+            // tmp(i, j) = op(neighbourhood);
+        }
+    }
+    return tmp;
 }
 
 template<typename ValueT>

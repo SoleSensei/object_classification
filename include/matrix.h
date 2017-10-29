@@ -75,13 +75,7 @@ public:
 	// Minimum radius is 0, operator will process only one pixel every time
 	template<typename UnaryMatrixOperator>
 	// Function unary map returns a matrix of
-	Matrix <
-		// type which is returned
-		typename std::result_of <
-		// by operator applied to neighbourhood of pixel
-		UnaryMatrixOperator(Matrix<ValueT>)
-		> ::type
-	>
+	Matrix <ValueT>
 	unary_map(const UnaryMatrixOperator &op) const;
 
 
