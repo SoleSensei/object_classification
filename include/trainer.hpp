@@ -47,11 +47,13 @@ public:
 Image grayScale (BMP* src);
 
 //split pic into [parts_num] pieces
-void splitInto(Image pic, Image* pieces, const int parts_num);
+void splitInto(Image pic, Image* cells, const int parts_num);
+vector<int> to_vector(Image matrix);
 
-Histype calc_histo(Image gabs, Image gdir);  
+Histype calc_hog(Image gabs, Image gdir);  
+Histype calc_lbl(Image img);  
 
-Image custom(Image src, Matrix<double> kernel);
+Image custom(Image src, Image kernel);
 
 Image sobelX(Image src);
 Image sobelY(Image src);

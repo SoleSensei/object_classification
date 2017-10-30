@@ -71,15 +71,18 @@ void ExtractFeatures(const TDataSet& data_set, TFeatures* features) {
 
         Image _image = grayScale(src_image);
         const int parts_num = 64; 
-        Image pieces[parts_num]; 
-        splitInto(_image, pieces, parts_num); //_image splitted on parts_num pieces
+        Image cell[parts_num]; 
+        splitInto(_image, cell, parts_num); //_image splitted on parts_num cells
         
         Histype histo; //vector of histograms
         for(int i = 0; i < parts_num; ++i){
-            auto gabs = gradAbs(pieces[i]);
-            auto gdir = gradDir(pieces[i]);            
-            auto h = calc_histo(gabs, gdir); //cell's histogram calculation
-            histo.insert(histo.end(), h.begin(), h.end()); //concatenation with other histograms
+            auto gabs = gradAbs(cell[i]);
+            auto gdir = gradDir(cell[i]);            
+            auto HOG = calc_hog(gabs, gdir); //one cell histogram calculation
+            auto LBL = calc_lbl(cell[i]);
+                //concatenation with other histograms
+            histo.insert(histo.end(), HOG.begin(), HOG.end()); 
+            histo.insert(histo.end(), LBL.begin(), LBL.end());
         }
         
         features->push_back(make_pair(histo, label));
