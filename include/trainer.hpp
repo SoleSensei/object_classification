@@ -19,9 +19,11 @@ using std::make_pair;
 using std::cout;
 using std::cerr;
 using std::endl;
-
+using std::tuple;
+using std::make_tuple;
 //define some types
 typedef Matrix<double> Image;
+typedef Matrix<tuple<uint,uint,uint>> Image3;
 typedef std::vector<double> Histype;
 
 //Image ptr + class label 
@@ -48,10 +50,13 @@ Image grayScale (BMP* src);
 
 //split pic into [parts_num] pieces
 void splitInto(Image pic, Image* cells, const int parts_num);
+void splitInto3(Image3 pic, Image3* cells, const int parts_num);
 vector<int> to_vector(Image matrix);
+Image3 to_image3(BMP* src);
 
 Histype calc_hog(Image gabs, Image gdir);  
-Histype calc_lbl(Image img);  
+Histype calc_lbl(Image pic);  
+Histype calc_color(Image3 pic);
 
 Image custom(Image src, Image kernel);
 

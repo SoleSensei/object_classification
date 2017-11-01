@@ -68,11 +68,17 @@ void ExtractFeatures(const TDataSet& data_set, TFeatures* features) {
     for (vector <pair<BMP*,int>>::const_iterator ds = data_set.begin(); ds < data_set.end(); ++ds){
         BMP* src_image = (*ds).first;
         int label = (*ds).second;
-
-        Image _image = grayScale(src_image);
+        
+            //BMP to image
+        Image image = grayScale(src_image);
+        Image3 image3 = to_image3(src_image);
+        
+            //splitting
         const int parts_num = 64; 
-        Image cell[parts_num]; 
-        splitInto(_image, cell, parts_num); //_image splitted on parts_num cells
+        Image cell[parts_num];
+        Image3 color_cell[parts_num]; 
+        splitInto(image, cell, parts_num); //image splitted on parts_num cells
+        splitInto3(image3, color_cell, parts_num); //image3 splitted on parts_num color_cells
         
         Histype histo; //vector of histograms
         for(int i = 0; i < parts_num; ++i){
@@ -80,9 +86,11 @@ void ExtractFeatures(const TDataSet& data_set, TFeatures* features) {
             auto gdir = gradDir(cell[i]);            
             auto HOG = calc_hog(gabs, gdir); //one cell histogram calculation
             auto LBL = calc_lbl(cell[i]);
+            auto COL = calc_color(color_cell[i]);
                 //concatenation with other histograms
             histo.insert(histo.end(), HOG.begin(), HOG.end()); 
             histo.insert(histo.end(), LBL.begin(), LBL.end());
+            histo.insert(histo.end(), COL.begin(), COL.end());
         }
         
         features->push_back(make_pair(histo, label));

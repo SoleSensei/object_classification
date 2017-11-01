@@ -17,29 +17,60 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
-Image grayScale (BMP* img){
+Image3 to_image3(BMP* pic){
 
-    auto width = img->TellWidth();
-    auto height = img->TellHeight();
+    auto width = pic->TellWidth();
+    auto height = pic->TellHeight();
+    Image3 res = Image3(width, height);
+
+    for (int i = 0; i < width; ++i)
+        for (int j = 0; j < height; ++j){
+            RGBApixel pix = pic->GetPixel(i,j);
+            res(i,j) = make_tuple(pix.Red, pix.Green, pix.Blue);
+    }
+    
+    return res;
+}
+
+Image grayScale (BMP* pic){
+
+    auto width = pic->TellWidth();
+    auto height = pic->TellHeight();
     Image res = Image(width, height);
     
     for (int i = 0; i < width; ++i)
         for (int j = 0; j < height; ++j)
         {
-            RGBApixel pix = img->GetPixel(i,j);
+            RGBApixel pix = pic->GetPixel(i,j);
             res(i,j) = 0.299 * pix.Red + 0.587 * pix.Green + 0.114 * pix.Blue;
         }
 
     return res;
-
 }
 
 void splitInto(Image pic, Image* cells, const int parts){
 
     int part = sqrt(parts);
-    for(int i = 0; i < parts; ++i)
-        cells[i]=pic.submatrix((i%part)*pic.n_rows/part,(i/part)*pic.n_cols/part,pic.n_rows/part,pic.n_cols/part);
+    uint lenX = pic.n_rows / part;
+    uint lenY = pic.n_cols / part;
+    for(int i = 0; i < parts; ++i){
+        auto fromX = (i%part) * lenX;
+        auto fromY = (i/part) * lenY;
+        cells[i]=pic.submatrix(fromX, fromY, lenX, lenY);
+    }   
 }
+
+void splitInto3(Image3 pic, Image3* cells, const int parts){
+    
+        int part = sqrt(parts);
+        uint lenX = pic.n_rows / part;
+        uint lenY = pic.n_cols / part;
+        for(int i = 0; i < parts; ++i){
+            auto fromX = (i%part) * lenX;
+            auto fromY = (i/part) * lenY;
+            cells[i]=pic.submatrix(fromX, fromY, lenX, lenY);
+        }
+    }
 
 vector<int> to_vector(Image matrix){
     //only for matrix 3x3
@@ -64,7 +95,7 @@ Histype calc_hog(Image gabs, Image gdir){
     Histype hist(size, 0.0);
     for (uint i = 0; i < gdir.n_rows; ++i){
         for(uint j = 0; j < gdir.n_cols; ++j){
-            uint k = uint((PI + gdir(i,j)/ (2*PI) * size)) % size; 
+            uint k = uint(PI + gdir(i,j) / (2*PI) * size) % size; 
             hist[k] += gabs(i,j);
         }
     }
@@ -82,25 +113,25 @@ Histype calc_hog(Image gabs, Image gdir){
     return hist;
 }
 
-Histype calc_lbl(Image img){
+Histype calc_lbl(Image pic){
 
     Image neighbor = {{1, 1, 1},
                       {1, 0, 1},
                       {1, 1, 1}}; 
     Histype hist(256, 0.0);
     uint radius = neighbor.n_rows/2;
-    uint nrows = img.n_rows + 2*radius;
-    uint ncols = img.n_cols + 2*radius;
+    uint nrows = pic.n_rows + 2*radius;
+    uint ncols = pic.n_cols + 2*radius;
     Image tmp(nrows, ncols);
     //mirror borders
     for(uint i = 0; i < tmp.n_rows; ++i)
         for(uint j = 0; j < tmp.n_cols; ++j){
-        auto x = i >= img.n_rows + radius ? 2*(img.n_rows-1)+radius - i : abs(radius - i);  
-        auto y = j >= img.n_cols + radius ? 2*(img.n_cols-1)+radius - j : abs(radius - j);  
-        tmp(i,j) = img(x,y);
+        auto x = i >= pic.n_rows + radius ? 2*(pic.n_rows-1)+radius - i : abs(radius - i);  
+        auto y = j >= pic.n_cols + radius ? 2*(pic.n_cols-1)+radius - j : abs(radius - j);  
+        tmp(i,j) = pic(x,y);
     }
-    for(uint i = radius; i < img.n_rows-radius; ++i)
-        for(uint j = radius; j < img.n_cols-radius; ++j){
+    for(uint i = radius; i < pic.n_rows-radius; ++i)
+        for(uint j = radius; j < pic.n_cols-radius; ++j){
             Image mask = tmp.submatrix(i-radius, j-radius, neighbor.n_rows, neighbor.n_cols);
 
             for(uint x = 0; x < neighbor.n_rows; ++x)
@@ -128,35 +159,83 @@ Histype calc_lbl(Image img){
     
     return hist;
 }
+Histype calc_color(Image3 pic){
+    const int size = pic.n_cols * pic.n_rows;
+    Histype hist(3, 0.0); // rgb
+    
+    int r_cl,g_cl,b_cl;
+    vector<int> rHist(256, 0);
+    vector<int> gHist(256, 0);
+    vector<int> bHist(256, 0);
+    for (uint i = 0; i < pic.n_rows; ++i)
+        for(uint j = 0; j < pic.n_cols; ++j){
+            std::tie(r_cl,g_cl,b_cl) = pic(i,j);
+            rHist[r_cl]++;
+            gHist[g_cl]++;
+            bHist[b_cl]++;
+        }
 
+    int sum_r = 0, sum_g = 0, sum_b = 0;
+    int r = 0, g = 0, b = 0; //median indexes
+    for (int i = 0; i < 256; ++i){ //find median
+        sum_r += rHist[i];
+        sum_g += gHist[i];
+        sum_b += bHist[i];
+        if (sum_r > size/2){ //found
+            r = i;
+            sum_r = 0;
+        }
+        if (sum_g > size/2){
+            g = i;
+            sum_g = 0;
+        }
+        if (sum_b > size/2){
+            b = i;
+            sum_b = 0;
+        }
+    }
+    hist[0] = r;
+    hist[1] = g;
+    hist[2] = b;
+        //normalization
+    double sum2  = r*r + g*g + b*b;
+    if (sum2 < EPS) 
+        return hist;
+    double sum = sqrt(sum2);
+    for(uint i = 0; i < 3; ++i)
+        hist[i] = hist[i] / sum;
+
+    return hist;
+}
 Image gradAbs(Image src){
 
-	Image width = sobelX(src);
-    Image height = sobelY(src);
+	Image hor = sobelX(src);
+    Image ver = sobelY(src);
     
     Image res(src.n_rows, src.n_cols);
-	for(uint i = 0; i < width.n_rows; ++i)
-        for(uint j = 0; j < height.n_cols; ++j)
-            res(i,j)=sqrt(width(i,j)*width(i,j) + height(i,j)*height(i,j));
+	for(uint i = 0; i < hor.n_rows; ++i)
+        for(uint j = 0; j < ver.n_cols; ++j)
+            res(i,j) = sqrt(hor(i,j)*hor(i,j) + ver(i,j)*ver(i,j));
     
     return res;
 }
 
 Image gradDir(Image src){
 
-	Image width = sobelX(src);
-	Image height = sobelY(src);
+	Image hor = sobelX(src);
+	Image ver = sobelY(src);
 	
 	Image res(src.n_rows, src.n_cols);
 
-	for(uint i=0; i < width.n_rows; ++i)
-		for(uint j=0; j < height.n_cols; ++j)
-			res(i,j)=std::atan2(height(i,j), width(i,j));
+	for(uint i = 0; i < hor.n_rows; ++i)
+		for(uint j = 0; j < ver.n_cols; ++j)
+			res(i,j) = std::atan2(ver(i,j), hor(i,j));
 
     return res;
 }
 
 Image sobelX(Image src) {
+
     Image kernel = {{-1, 0, 1},
                     {-2, 0, 2},
                     {-1, 0, 1}};
@@ -164,6 +243,7 @@ Image sobelX(Image src) {
 }
 
 Image sobelY(Image src) {
+
     Image kernel = {{ 1,  2,  1},
                     { 0,  0,  0},
                     {-1, -2, -1}};
