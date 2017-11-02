@@ -19,6 +19,7 @@
 
 ### из ./build/bin
 обучение классификатора
+Цветовые признаки
 
     task2.exe -d ../../data/multiclass/train_labels.txt -m model.txt --train
 
