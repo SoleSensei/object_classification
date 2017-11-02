@@ -17,15 +17,16 @@
 ## Сборка
 
     make all
+    make clean - очистка
 
 ### Запуск из ./build/bin
 обучение классификатора
 
-    task2.exe -d ../../data/multiclass/train_labels.txt -m model.txt --train
+    ./task2 -d ../../data/multiclass/train_labels.txt -m model.txt --train
 
 классификация
 
-    task2.exe -d ../../data/multiclass/test_labels.txt -m model.txt -l predictions.txt --predict
+    ./task2 -d ../../data/multiclass/test_labels.txt -m model.txt -l predictions.txt --predict
 
 проверка точности классификации
 
