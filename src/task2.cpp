@@ -74,7 +74,7 @@ void ExtractFeatures(const TDataSet& data_set, TFeatures* features) {
         Image3 image3 = to_image3(src_image);
         
             //splitting
-        const int parts_num = 64; 
+        const int parts_num = 81; 
         Image cell[parts_num];
         Image3 color_cell[parts_num]; 
         splitInto(image, cell, parts_num); //image splitted on parts_num cells
