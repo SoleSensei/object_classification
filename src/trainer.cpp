@@ -244,9 +244,9 @@ Image sobelX(Image src) {
 
 Image sobelY(Image src) {
 
-    Image kernel = {{ 1,  2,  1},
+    Image kernel = {{-1, -2, -1},
                     { 0,  0,  0},
-                    {-1, -2, -1}};
+                    { 1,  2,  1}};
     return custom(src, kernel);
 }
 
