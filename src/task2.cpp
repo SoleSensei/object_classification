@@ -250,7 +250,7 @@ int main(int argc, char** argv) {
         ArgvParser::OptionRequiresValue);
     cmd.defineOption("train", "Train classifier");
     cmd.defineOption("predict", "Predict dataset");
-    cmd.defineOption("SSE", "Use SSE in training");
+    cmd.defineOption("SSE", "Use SSE in classificator functions");
         
         // Add options aliases
     cmd.defineOptionAlternative("data_set", "d");
