@@ -132,6 +132,15 @@ Matrix<ValueT>::Matrix(Matrix && src) :
 	src._data.reset();
 }
 
+template<typename ValueT>
+ValueT* Matrix<ValueT>::get_data(){
+	return _data.get();
+}
+
+template<typename ValueT>
+uint Matrix<ValueT>::get_stride(){
+	return stride;
+}
 
 template<typename ValueT>
 ValueT &Matrix<ValueT>::operator()(uint row, uint col)

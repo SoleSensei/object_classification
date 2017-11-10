@@ -4,11 +4,14 @@
 #include <cassert>
 #include <iostream>
 #include <cmath>
+#include <stdint.h>
+ 
 
-#include "classifier.h"
+#include "classifier.h" 
 #include "EasyBMP.h"
 #include "linear.h"
 #include "argvparser.h"
+
 #include "trainer.hpp"
 
 using CommandLineProcessing::ArgvParser;
@@ -64,7 +67,12 @@ void SavePredictions(const TFileList& file_list,
 }
 
 // Extract features from dataset.
-void ExtractFeatures(const TDataSet& data_set, TFeatures* features) {
+void ExtractFeatures(const TDataSet& data_set, TFeatures* features, bool isSSE) {
+
+    Timer t;
+    t.start();
+    if (!isSSE){ //processing without SSE
+        t.check("Naive implementation starts (no SSE)");
     for (vector <pair<BMP*,int>>::const_iterator ds = data_set.begin(); ds < data_set.end(); ++ds){
         BMP* src_image = (*ds).first;
         int label = (*ds).second;
@@ -82,8 +90,54 @@ void ExtractFeatures(const TDataSet& data_set, TFeatures* features) {
         
         Histype histo; //vector of histograms
         for(int i = 0; i < parts_num; ++i){
-            auto gabs = gradAbs(cell[i]);
-            auto gdir = gradDir(cell[i]);            
+                //calculating sobel
+            Image hor = sobelX(cell[i]);
+            Image ver = sobelY(cell[i]);
+                //calculating absolut and direction of gradient
+            auto gabs = gradAbs(hor, ver);
+            auto gdir = gradDir(hor, ver);
+                //calculation HOG, LBL, color feautures         
+            auto HOG = calc_hog(gabs, gdir); //one cell histogram calculation
+            auto LBL = calc_lbl(cell[i]);
+            auto COL = calc_color(color_cell[i]);
+                //concatenation with other histograms
+            histo.insert(histo.end(), HOG.begin(), HOG.end()); 
+            histo.insert(histo.end(), LBL.begin(), LBL.end());
+            histo.insert(histo.end(), COL.begin(), COL.end());
+        }
+        
+        features->push_back(make_pair(histo, label));
+                
+    }
+        t.check("Naive implementation complete (no SSE)");
+    
+    } else { 
+    /*       using SSE in processing    */
+        t.check("SSE implementation starts");    
+    for (vector <pair<BMP*,int>>::const_iterator ds = data_set.begin(); ds < data_set.end(); ++ds){
+        BMP* src_image = (*ds).first;
+        int label = (*ds).second;
+
+            //BMP to image
+        Image image = grayScale(src_image);
+        Image3 image3 = to_image3(src_image);
+    
+            //splitting
+        const int parts_num = 81; 
+        Image cell[parts_num];
+        Image3 color_cell[parts_num]; 
+        splitInto(image, cell, parts_num); //image splitted on parts_num cells
+        splitInto3(image3, color_cell, parts_num); //image3 splitted on parts_num color_cells
+
+        Histype histo; //vector of histograms
+        for(int i = 0; i < parts_num; ++i){
+            //calculating sobel
+            Image hor = sobelX_SSE(cell[i]);
+            Image ver = sobelY_SSE(cell[i]);
+                //calculating absolut and direction of gradient
+            auto gabs = gradAbs_SSE(hor, ver);
+            auto gdir = gradDir(hor, ver);
+                //calculation HOG, LBL, color feautures         
             auto HOG = calc_hog(gabs, gdir); //one cell histogram calculation
             auto LBL = calc_lbl(cell[i]);
             auto COL = calc_color(color_cell[i]);
@@ -96,6 +150,9 @@ void ExtractFeatures(const TDataSet& data_set, TFeatures* features) {
         features->push_back(make_pair(histo, label));
 
     }
+        t.check("SSE implementation complete");    
+    }
+        t.stop();
 }
 
 // Clear dataset structure
@@ -109,7 +166,7 @@ void ClearDataset(TDataSet* data_set) {
 
 // Train SVM classifier using data from 'data_file' and save trained model
 // to 'model_file'
-void TrainClassifier(const string& data_file, const string& model_file) {
+void TrainClassifier(const string& data_file, const string& model_file, bool isSSE) {
         // List of image file names and its labels
     TFileList file_list;
         // Structure of images and its labels
@@ -126,7 +183,7 @@ void TrainClassifier(const string& data_file, const string& model_file) {
         // Load images
     LoadImages(file_list, &data_set);
         // Extract features from images
-    ExtractFeatures(data_set, &features);
+    ExtractFeatures(data_set, &features, isSSE);
 
         // You can change parameters of classifier here
     params.C = 0.1;
@@ -143,7 +200,8 @@ void TrainClassifier(const string& data_file, const string& model_file) {
 // save predictions to 'prediction_file'
 void PredictData(const string& data_file,
                  const string& model_file,
-                 const string& prediction_file) {
+                 const string& prediction_file,
+                 bool isSSE ) {
         // List of image file names and its labels
     TFileList file_list;
         // Structure of images and its labels
@@ -158,7 +216,7 @@ void PredictData(const string& data_file,
         // Load images
     LoadImages(file_list, &data_set);
         // Extract features from images
-    ExtractFeatures(data_set, &features);
+    ExtractFeatures(data_set, &features, isSSE);
 
         // Classifier 
     TClassifier classifier = TClassifier(TClassifierParams());
@@ -192,6 +250,7 @@ int main(int argc, char** argv) {
         ArgvParser::OptionRequiresValue);
     cmd.defineOption("train", "Train classifier");
     cmd.defineOption("predict", "Predict dataset");
+    cmd.defineOption("SSE", "Use SSE in training");
         
         // Add options aliases
     cmd.defineOptionAlternative("data_set", "d");
@@ -199,6 +258,7 @@ int main(int argc, char** argv) {
     cmd.defineOptionAlternative("predicted_labels", "l");
     cmd.defineOptionAlternative("train", "t");
     cmd.defineOptionAlternative("predict", "p");
+    cmd.defineOptionAlternative("SSE", "sse");
 
         // Parse options
     int result = cmd.parse(argc, argv);
@@ -214,10 +274,10 @@ int main(int argc, char** argv) {
     string model_file = cmd.optionValue("model");
     bool train = cmd.foundOption("train");
     bool predict = cmd.foundOption("predict");
-
+    bool isSSE = cmd.foundOption("sse");
         // If we need to train classifier
     if (train)
-        TrainClassifier(data_file, model_file);
+        TrainClassifier(data_file, model_file, isSSE);
         // If we need to predict data
     if (predict) {
             // You must declare file to save images
@@ -228,6 +288,6 @@ int main(int argc, char** argv) {
             // File to save predictions
         string prediction_file = cmd.optionValue("predicted_labels");
             // Predict data
-        PredictData(data_file, model_file, prediction_file);
+        PredictData(data_file, model_file, prediction_file, isSSE);
     }
 }

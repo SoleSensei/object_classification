@@ -1,7 +1,14 @@
 #pragma once
 #include <vector>
 #include <cmath>
+#include <malloc.h>
+#include <stdlib.h>
+#include <emmintrin.h>
+#include <smmintrin.h>
+#include <pmmintrin.h>
 
+#include "Environment.h"
+#include "Timer.h"
 
 #include "matrix.h"
 #include "classifier.h"
@@ -22,9 +29,9 @@ using std::endl;
 using std::tuple;
 using std::make_tuple;
 //define some types
-typedef Matrix<double> Image;
+typedef Matrix<float> Image;
 typedef Matrix<tuple<uint,uint,uint>> Image3;
-typedef std::vector<double> Histype;
+typedef std::vector<float> Histype;
 
 //Image ptr + class label 
 typedef std::vector<pair<BMP*, int> > TDataSet;
@@ -59,9 +66,15 @@ Histype calc_lbl(Image pic);
 Histype calc_color(Image3 pic);
 
 Image custom(Image src, Image kernel);
+Image custom_SSE(Image src, Image kernel);
 
 Image sobelX(Image src);
 Image sobelY(Image src);
+Image sobelX_SSE(Image src);
+Image sobelY_SSE(Image src);
 
-Image gradAbs(Image src);
-Image gradDir(Image src);
+Image gradAbs(Image sobelx, Image sobely);
+Image gradAbs_SSE(Image hor, Image ver);
+Image gradDir(Image sobelx, Image sobely);
+
+float imgDif(Image img1, Image img2);

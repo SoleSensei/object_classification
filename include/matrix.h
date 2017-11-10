@@ -114,6 +114,9 @@ public:
 	const Matrix<ValueT> submatrix(uint prow, uint pcol,
 		uint rows, uint cols) const;
 
+	ValueT* get_data();
+	uint get_stride();
+
 private:
 	// Stride - number of elements between two rows (needed for efficient
 	// submatrix function without memory copy)
@@ -125,6 +128,7 @@ private:
 	// works: unique_ptr<int[]>; doesn't: shared_ptr<int[]>.
 	// so, for now we use shared_ptr just for counting links,
 	// and work with raw pointer through get().
+	// ValueT* _data;
 	std::shared_ptr<ValueT> _data;
 
 	// Const cast for writing public const fields.
