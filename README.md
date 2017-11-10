@@ -1,5 +1,5 @@
 # Object Classification
-Машграф #2 Классификация объектов
+Машграф #2 Классификация объектов + SSE
 
 ## Базовая часть
 Гистограммы ориентированных градиентов
@@ -31,3 +31,7 @@
 проверка точности классификации
 
     ./compare.py data/multiclass/test_labels.txt build/bin/predictions.txt
+
+### Тестовый скрипт test.sh
+
+    bash test.sh
