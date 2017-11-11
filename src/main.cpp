@@ -16,8 +16,24 @@
 
 using CommandLineProcessing::ArgvParser;
 
-// Load list of files and its labels from 'data_file' and
-// stores it in 'file_list'
+
+/**
+@mainpage Objects classification using SSE. 
+<p>Tested with GTest.
+<p>Documented with Doxygen.
+<p>on GitHub: [https://github.com/SoleSensei/object_classification]
+@author This project was created by Sole Sensei.
+*/
+
+/**
+@file main.cpp
+*/
+
+/**
+@function LoadFileList
+loads list of files and its labels from 'data_file' and stores it in 'file_list' 
+@param data_file is string stores paths to BMP images and theirs labels
+@param file_list is vector of <string pathname, int label>*/
 void LoadFileList(const string& data_file, TFileList* file_list) {
     ifstream stream(data_file.c_str());
 
@@ -39,19 +55,28 @@ void LoadFileList(const string& data_file, TFileList* file_list) {
     stream.close();
 }
 
-// Load images by list of files 'file_list' and store them in 'data_set'
+/**
+@function LoadImages
+loads images by list of files 'file_list' and stores them in 'data_set' 
+@param file_list is vector of <string pathname, int label>
+@param data_set is vector of <BMP* image, int label> */
 void LoadImages(const TFileList& file_list, TDataSet* data_set) {
     for (size_t img_idx = 0; img_idx < file_list.size(); ++img_idx) {
-            // Create image
+            /// Create image
         BMP* image = new BMP();
-            // Read image from file
+            /// Read image from file
         image->ReadFromFile(file_list[img_idx].first.c_str());
-            // Add image and it's label to dataset
+            /// Add image and it's label to dataset
         data_set->push_back(make_pair(image, file_list[img_idx].second));
     }
 }
 
-// Save result of prediction to file
+/**
+@function SavePredictions 
+saves result of prediction to file 
+@param file_list is vector of <string pathname, int label>
+@param labels is vector of <int label> 
+@param prediction_file is output txt file to store classificator prediction*/
 void SavePredictions(const TFileList& file_list,
                      const TLabels& labels, 
                      const string& prediction_file) {
@@ -66,7 +91,13 @@ void SavePredictions(const TFileList& file_list,
     stream.close();
 }
 
-// Extract features from dataset.
+/**
+@function ExtractFeatures
+extracts features from dataset. Here all images from 'data_set' are processing
+to build histograms 'features' in order to train model and predict classes
+@param data_set is vector of <BMP* image, int label> 
+@param features is vector of <Histype histogram, int labels> where Histype is vector <floats>
+@param isSSE is boolean value shows type of next processing */
 void ExtractFeatures(const TDataSet& data_set, TFeatures* features, bool isSSE) {
 
     Timer t;
@@ -155,7 +186,10 @@ void ExtractFeatures(const TDataSet& data_set, TFeatures* features, bool isSSE) 
         t.stop();
 }
 
-// Clear dataset structure
+/**
+@function ClearDataset
+clears dataset structure 
+@param data_set is vector of <BMP* image, int label> */
 void ClearDataset(TDataSet* data_set) {
         // Delete all images from dataset
     for (size_t image_idx = 0; image_idx < data_set->size(); ++image_idx)
@@ -164,8 +198,12 @@ void ClearDataset(TDataSet* data_set) {
     data_set->clear();
 }
 
-// Train SVM classifier using data from 'data_file' and save trained model
-// to 'model_file'
+/**
+@function TrainClassifier
+trains SVM classifier using data from 'data_file' and saves trained model to 'model_file'
+@param data_set is vector of <BMP* image, int label>
+@param model_file is output txt model file stores info about classificator traing
+@param isSSE is boolean value shows type of next processing */
 void TrainClassifier(const string& data_file, const string& model_file, bool isSSE) {
         // List of image file names and its labels
     TFileList file_list;
@@ -196,8 +234,12 @@ void TrainClassifier(const string& data_file, const string& model_file, bool isS
     ClearDataset(&data_set);
 }
 
-// Predict data from 'data_file' using model from 'model_file' and
-// save predictions to 'prediction_file'
+/**
+@function PredictData
+predicts data from 'data_file' using model from 'model_file' and saves predictions to 'prediction_file'
+@param data_set is vector of <BMP* image, int label>
+@param model_file is output txt model file stores info about classificator traing
+@param isSSE is boolean value shows type of next processing */
 void PredictData(const string& data_file,
                  const string& model_file,
                  const string& prediction_file,
