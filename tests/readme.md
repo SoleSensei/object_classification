@@ -21,7 +21,7 @@ go to google test dir
     sudo cp *.a /usr/lib
 
 3. Make and run tests
-Look runTest.sh to more information
+Look runTest.sh to more information. Using Lenna.bmp - location data/Lenna.bmp - #defined in tmain.cpp
 
     cd ${prj}
     bash runTest.sh
