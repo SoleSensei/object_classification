@@ -17,7 +17,7 @@
 ## Сборка
 
     make all
-    make clean - очистка
+    make clean # очистка
 
 ### Запуск из ./build/bin
 обучение классификатора
@@ -32,6 +32,11 @@
 
     ./compare.py data/multiclass/test_labels.txt build/bin/predictions.txt
 
-### Тестовый скрипт test.sh
+### Тестовый скрипты 
+Сборка и запуск программы
+    
+    bash run.sh
 
-    bash test.sh
+Тестирование с помощью утилиты Google Test
+
+    bash runTest.sh
