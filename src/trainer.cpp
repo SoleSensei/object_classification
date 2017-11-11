@@ -17,6 +17,10 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+/**
+@file trainer.cpp
+*/
+
 Image3 to_image3(BMP* pic){
 
     auto width = pic->TellWidth();
