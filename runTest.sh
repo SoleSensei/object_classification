@@ -1,6 +1,9 @@
 #!/bin/bash
 # sudo bash runTest.sh # to begin tests
 
+# make project 
+make
+
 # create build directory to make tests
 cd ./tests
 mkdir build
