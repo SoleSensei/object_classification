@@ -3,12 +3,14 @@ Google Test C++ test framework
 1. Download google.test archive https://github.com/google/googletest, unzip to ${prj} folder googletest
 
 2. Run next commands
+
 Install the gtest development package and cmake: 
 
     sudo apt-get install libgtest-dev
     sudo apt-get install cmake
 
 3. Build google test first
+
 go to google test dir
     
     cd  ${prj}/googletest
@@ -21,6 +23,7 @@ go to google test dir
     sudo cp *.a /usr/lib
 
 3. Make and run tests
+
 Look runTest.sh to more information. Using Lenna.bmp - location data/Lenna.bmp - #defined in tmain.cpp
 
     cd ${prj}
