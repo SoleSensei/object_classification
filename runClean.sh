@@ -7,7 +7,6 @@ make clean
 # delete doxygen
 echo delete doxygen
 rm -f CMakeLists.txt Doxyfile
-rm -rf doc/
 rm -rf cbuild/
 
 # delete gtest
