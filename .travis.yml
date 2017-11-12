@@ -9,10 +9,11 @@ before_install:
  - sudo make
  - sudo cp *.a /usr/lib
  - cd -
+script:
+ - make
  - cp ./externals/liblinear-1.94/*.h ./bridge/include
  - cp ./externals/EasyBMP/include/*.h ./bridge/include
  - cp ./externals/argvparser/include/*.h ./bridge/include
-script:
  - bash run.sh
  - bash runTest.sh
  - bash runDocs.sh
