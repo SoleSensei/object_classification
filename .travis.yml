@@ -8,6 +8,7 @@ before_install:
  - sudo cp *.a /usr/lib
  - cd -
  - sudo apt-get install doxygen
+ - make clean
 script:
  - bash run.sh
  - bash runTest.sh
