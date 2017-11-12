@@ -14,6 +14,15 @@
 Локальные бинарные шаблоны
 Цветовые признаки
 
+## SSE
+Реализована технология SSE для фильтров Собеля и вычисления модулей градиента
+
+    Naive implementation (no SSE) : Time [0.614] seconds
+    SSE implementation : Time [0.561] seconds
+
+    Ubuntu 16.04
+    System: Intel Core i5-6200U 2.30GHz, 8Gb
+
 ## Сборка
 
     make all
@@ -40,3 +49,11 @@
 Тестирование с помощью утилиты Google Test. Больше информации ./tests/readme.md
 
     bash runTest.sh
+
+Документирование с помощью Doxygen
+
+    bash runDocs.sh
+
+Очистка проекта. Возвращение проекту исходный вид
+
+    bash runClean.sh
