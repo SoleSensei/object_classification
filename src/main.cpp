@@ -18,11 +18,14 @@ using CommandLineProcessing::ArgvParser;
 
 
 /**
-@mainpage Objects classification using SSE. 
-<p>Tested with GTest.
-<p>Documented with Doxygen.
-<p>on GitHub: [https://github.com/SoleSensei/object_classification]
-@author This project was created by Sole Sensei.
+@mainpage Objects classification
+<ul>
+<li>Used SSE vectorization
+<li>Tested with [GTest](https://github.com/google/googletest)
+<li>Documented with Doxygen
+<li>Project [on GitHub](https://github.com/SoleSensei/object_classification)
+</ul>
+@author This project was created by [Sole Sensei](https://github.com/SoleSensei)
 */
 
 /**
@@ -97,7 +100,7 @@ extracts features from dataset. Here all images from 'data_set' are processing
 to build histograms 'features' in order to train model and predict classes
 @param data_set is vector of <BMP* image, int label> 
 @param features is vector of <Histype histogram, int labels> where Histype is vector <floats>
-@param isSSE is boolean value shows type of next processing */
+@param isSSE is boolean value shows type of processing */
 void ExtractFeatures(const TDataSet& data_set, TFeatures* features, bool isSSE) {
 
     Timer t;
@@ -203,7 +206,7 @@ void ClearDataset(TDataSet* data_set) {
 trains SVM classifier using data from 'data_file' and saves trained model to 'model_file'
 @param data_set is vector of <BMP* image, int label>
 @param model_file is output txt model file stores info about classificator traing
-@param isSSE is boolean value shows type of next processing */
+@param isSSE is boolean value shows type of processing */
 void TrainClassifier(const string& data_file, const string& model_file, bool isSSE) {
         // List of image file names and its labels
     TFileList file_list;
@@ -239,7 +242,7 @@ void TrainClassifier(const string& data_file, const string& model_file, bool isS
 predicts data from 'data_file' using model from 'model_file' and saves predictions to 'prediction_file'
 @param data_set is vector of <BMP* image, int label>
 @param model_file is output txt model file stores info about classificator traing
-@param isSSE is boolean value shows type of next processing */
+@param isSSE is boolean value shows type of processing */
 void PredictData(const string& data_file,
                  const string& model_file,
                  const string& prediction_file,
