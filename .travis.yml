@@ -9,7 +9,7 @@ before_install:
  - sudo make
  - sudo cp *.a /usr/lib
  - cd -
- - make cleanmak
+ - make clean
 script:
  - bash run.sh
  - bash runTest.sh
