@@ -1,6 +1,8 @@
 # Object Classification
 Машграф #2 Классификация объектов + SSE
 
+[Подробная документация](https://solesensei.github.io/object_classification/)
+
 ## Базовая часть
 Гистограммы ориентированных градиентов
 
@@ -12,6 +14,7 @@
 
 ## Дополнительная часть
 Локальные бинарные шаблоны
+
 Цветовые признаки
 
 ## SSE
@@ -50,7 +53,7 @@
 
     bash runTest.sh
 
-Документирование с помощью Doxygen
+[Документирование](https://solesensei.github.io/object_classification/) с помощью Doxygen
 
     bash runDocs.sh
 
