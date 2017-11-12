@@ -1,14 +1,15 @@
 language: cpp
 before_install:
+ - sudo apt-get update
+ - sudo apt-get install liblinear-dev
  - sudo apt-get install libgtest-dev
- - sudo apt-get install cmake
+ - sudo apt-get install doxygen
  - cd /usr/src/gtest
  - sudo cmake CMakeLists.txt
  - sudo make
  - sudo cp *.a /usr/lib
  - cd -
- - sudo apt-get install doxygen
- - make clean
+ - make cleanmak
 script:
  - bash run.sh
  - bash runTest.sh
