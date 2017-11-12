@@ -1,5 +1,5 @@
 #!/bin/bash
-# sudo bash runTest.sh # to begin tests
+# script tesing project with google test framework
 
 # make project 
 make
@@ -9,7 +9,7 @@ cd ./tests
 mkdir build
 
 # copy Make Lists for cmake
-cp ../bridge/CMakeLists.txt ./build/CMakeLists.txt
+cp ../bridge/CMakeLists_GTEST.txt ./build/CMakeLists.txt
 echo
 
 # make tests
