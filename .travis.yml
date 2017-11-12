@@ -9,8 +9,7 @@ before_install:
  - sudo make
  - sudo cp *.a /usr/lib
  - cd -
- - make
- - cp ./externals/liblinear-1.94/linear.h ./bridge/include/linear.h
+ - cp ./externals/liblinear-1.94/*.h ./bridge/include
  - cp ./externals/EasyBMP/include/*.h ./bridge/include
  - cp ./externals/argvparser/include/*.h ./bridge/include
 script:
