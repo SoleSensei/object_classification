@@ -1,7 +1,6 @@
 language: cpp
 compiler:
   - gcc
-  - clang
 install:
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 addons:
@@ -11,7 +10,6 @@ addons:
     packages:
     - gcc-4.8
     - g++-4.8
-    - clang
 before_install:
  - sudo apt-get update
  - sudo apt-get install liblinear-dev

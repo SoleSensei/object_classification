@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -O2 -g -Wall -std=c++0x -msse4.1
+CXXFLAGS = -O2 -g -Wall -std=c++0x -msse4.1 -fPIC
 
 # Strict compiler options
 CXXFLAGS += -Werror -Wformat-security -Wignored-qualifiers -Winit-self \
