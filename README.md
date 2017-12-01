@@ -49,7 +49,7 @@
     
     bash run.sh
 
-Тестирование с помощью утилиты Google Test. Больше информации ./tests/readme.md
+Тестирование с помощью утилиты Google Test. Больше информации [./tests/readme.md](./tests/readme.md)
 
     bash runTest.sh
 
