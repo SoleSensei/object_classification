@@ -1,7 +1,7 @@
 # Object Classification
 Train classificator on different images features and predict image class.
 
-[Full documantation](https://solesensei.github.io/object_classification/)
+[Full documentation](https://solesensei.github.io/object_classification/)
 
 ## Learning feautures
 [Histogram of oriented gradients](https://en.wikipedia.org/wiki/Histogram_of_oriented_gradients)
