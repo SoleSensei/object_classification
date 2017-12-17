@@ -1,24 +1,22 @@
 # Object Classification
-Машграф #2 Классификация объектов + SSE
+Train classificator on different images features and predict image class.
 
-[Подробная документация](https://solesensei.github.io/object_classification/)
+[Full documantation](https://solesensei.github.io/object_classification/)
 
-## Базовая часть
-Гистограммы ориентированных градиентов
+## Learning feautures
+[Histogram of oriented gradients](https://en.wikipedia.org/wiki/Histogram_of_oriented_gradients)
 
     1) grayscale
-    2) свертка фильтром Собеля
-    3) градиенты яркости пикселей
-    4) гистограммы градиентов + нормализация
-    5) конкатенация гистограмм в дескриптор
+    2) sobel filter
+    3) histogram of pixels brightness 
+    4) normalization and concatenation 
 
-## Дополнительная часть
-Локальные бинарные шаблоны
+[Local Binary Patterns](https://en.wikipedia.org/wiki/Local_binary_patterns)
 
-Цветовые признаки
+Color features
 
-## SSE
-Реализована технология SSE для фильтров Собеля и вычисления модулей градиента
+## using SSE
+Used SSE technology for Sobel filers and calculation gradients absolutes
 
     Naive implementation (no SSE) : Time [0.614] seconds
     SSE implementation : Time [0.561] seconds
@@ -26,37 +24,37 @@
     Ubuntu 16.04
     System: Intel Core i5-6200U 2.30GHz, 8Gb
 
-## Сборка
+## Build
 
     make all
-    make clean # очистка
+    make clean
 
-### Запуск из ./build/bin
-обучение классификатора
+### Launch from ./build/bin
+train classificator
 
     ./task2 -d ../../data/multiclass/train_labels.txt -m model.txt --train
 
-классификация
+classification
 
     ./task2 -d ../../data/multiclass/test_labels.txt -m model.txt -l predictions.txt --predict
 
-проверка точности классификации
+check precisiong
 
     ./compare.py data/multiclass/test_labels.txt build/bin/predictions.txt
 
-### Тестовые скрипты 
-Сборка и запуск программы
+### Test script 
+Build and launch
     
     bash run.sh
 
-Тестирование с помощью утилиты Google Test. Больше информации [./tests/readme.md](./tests/readme.md)
+Tested with Google Test. More info [./tests/readme.md](./tests/readme.md)
 
     bash runTest.sh
 
-[Документирование](https://solesensei.github.io/object_classification/) с помощью Doxygen
+[Documentation](https://solesensei.github.io/object_classification/) with Doxygen
 
     bash runDocs.sh
 
-Очистка проекта. Возвращение проекту исходный вид
+Clean project. Back to original
 
     bash runClean.sh
